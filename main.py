@@ -86,11 +86,8 @@ def parse_option():
     
     # distributed training
     parser.add_argument("--local_rank", type=int, required=True, help='local rank for DistributedDataParallel')
-
     args, unparsed = parser.parse_known_args()
-
     config = get_config(args)
-
     return args, config
 
 
@@ -173,10 +170,11 @@ def main(config):
             logger.info(f"**********mask meta test***********")
             acc1, acc5, loss = validate(config, data_loader_val, model,mask_meta=True)
             logger.info(f"Accuracy of the network on the {len(dataset_val)} test images: {acc1:.1f}%")
-#         data_loader_train.terminate()
+            # data_loader_train.terminate()
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     logger.info('Training time {}'.format(total_time_str))
+
 def train_one_epoch_local_data(config, model, criterion, data_loader, optimizer, epoch, mixup_fn, lr_scheduler,tb_logger=None):
     model.train()
     if hasattr(model.module,'cur_epoch'):
@@ -270,6 +268,7 @@ def train_one_epoch_local_data(config, model, criterion, data_loader, optimizer,
                 f'mem {memory_used:.0f}MB')
     epoch_time = time.time() - start
     logger.info(f"EPOCH {epoch} training takes {datetime.timedelta(seconds=int(epoch_time))}")
+
 @torch.no_grad()
 def validate(config, data_loader, model, mask_meta=False):
     criterion = torch.nn.CrossEntropyLoss()
@@ -399,5 +398,4 @@ if __name__ == '__main__':
 
     # print config
     logger.info(config.dump())
-
     main(config)
