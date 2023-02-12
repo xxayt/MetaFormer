@@ -96,6 +96,8 @@ def load_file(root,dataset):
             id2label[int(categorie['id'])] = name.strip().lower()
     
     return train_class_info,train_id2meta,val_class_info,val_id2meta,class_to_idx,id2label
+
+
 def find_images_and_targets_cub200(root,dataset,istrain=False,aux_info=False):
     imageid2label = {}
     with open(os.path.join(os.path.join(root,'CUB_200_2011'),'image_class_labels.txt'),'r') as f:
@@ -141,6 +143,8 @@ def find_images_and_targets_cub200(root,dataset,istrain=False,aux_info=False):
                 else:
                     images_and_targets.append([file_path,target])
     return images_and_targets,None,images_info
+
+
 def find_images_and_targets_cub200_attribute(root,dataset,istrain=False,aux_info=False):
     imageid2label = {}
     with open(os.path.join(os.path.join(root,'CUB_200_2011'),'image_class_labels.txt'),'r') as f:
@@ -186,6 +190,8 @@ def find_images_and_targets_cub200_attribute(root,dataset,istrain=False,aux_info
                 else:
                     images_and_targets.append([file_path,target])
     return images_and_targets,None,images_info
+
+
 def find_images_and_targets_oxfordflower(root,dataset,istrain=False,aux_info=False):
     imagelabels = scio.loadmat(os.path.join(root,'imagelabels.mat'))
     imagelabels = imagelabels['labels'][0]
@@ -212,6 +218,8 @@ def find_images_and_targets_oxfordflower(root,dataset,istrain=False,aux_info=Fal
         else:
             images_and_targets.append([file_path,target])
     return images_and_targets,None,images_info
+
+
 def find_images_and_targets_stanforddogs(root,dataset,istrain=False,aux_info=False):
     if istrain:
         anno_data = scio.loadmat(os.path.join(root,'train_list.mat'))
@@ -224,6 +232,8 @@ def find_images_and_targets_stanforddogs(root,dataset,istrain=False,aux_info=Fal
         target = int(label[0])-1
         images_and_targets.append([file_path,target])
     return images_and_targets,None,images_info
+
+
 def find_images_and_targets_nabirds(root,dataset,istrain=False,aux_info=False):
     root = os.path.join(root,'nabirds')
     image_paths = pd.read_csv(os.path.join(root,'images.txt'),sep=' ',names=['img_id','filepath'])
@@ -245,6 +255,8 @@ def find_images_and_targets_nabirds(root,dataset,istrain=False,aux_info=False):
         target = int(label_map[row['target']])
         images_and_targets.append([file_path,target])
     return images_and_targets,None,images_info
+
+
 def find_images_and_targets_stanfordcars_v1(root,dataset,istrain=False,aux_info=False):
     if istrain:
         flag = 'train'
@@ -263,6 +275,8 @@ def find_images_and_targets_stanfordcars_v1(root,dataset,istrain=False,aux_info=
         target = int(label[0][0])-1
         images_and_targets.append([file_path,target])
     return images_and_targets,None,images_info
+
+
 def find_images_and_targets_stanfordcars(root,dataset,istrain=False,aux_info=False):
     anno_data = scio.loadmat(os.path.join(root,'cars_annos.mat'))
     annotation = anno_data['annotations']
@@ -277,6 +291,8 @@ def find_images_and_targets_stanfordcars(root,dataset,istrain=False,aux_info=Fal
         elif not istrain and int(split[0][0])==1:
             images_and_targets.append([file_path,target])
     return images_and_targets,None,images_info        
+
+
 def find_images_and_targets_aircraft(root,dataset,istrain=False,aux_info=False):
     file_root = os.path.join(root,'fgvc-aircraft-2013b','data')
     if istrain:
@@ -302,7 +318,8 @@ def find_images_and_targets_aircraft(root,dataset,istrain=False,aux_info=False):
             target = class_to_idx[class_name]
             images_and_targets.append([file_path,target])
     return images_and_targets,class_to_idx,images_info
-            
+
+
 def find_images_and_targets_2017_2018(root,dataset,istrain=False,aux_info=False):
     train_class_info,train_id2meta,val_class_info,val_id2meta,class_to_idx,id2label = load_file(root,dataset)
     miss_hour = (dataset == 'inaturelist2017')
@@ -335,6 +352,8 @@ def find_images_and_targets_2017_2018(root,dataset,istrain=False,aux_info=False)
         else:
             images_and_targets.append((file_path,target))
     return images_and_targets,class_to_idx,images_info
+
+
 def find_images_and_targets(root,istrain=False,aux_info=False):
     if os.path.exists(os.path.join(root,'train.json')):
         with open(os.path.join(root,'train.json'),'r') as f:
@@ -441,6 +460,7 @@ class DatasetMeta(data.Dataset):
 
     def __len__(self):
         return len(self.samples)
+
 if __name__ == '__main__':
 #     train_dataset = DatasetPre('./fgvc_previous','./fgvc_previous',train=True,aux_info=True)
 #     import ipdb;ipdb.set_trace()

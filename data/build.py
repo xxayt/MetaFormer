@@ -18,6 +18,7 @@ from timm.data.transforms import _pil_interp
 from .cached_image_folder import CachedImageFolder
 from .samplers import SubsetRandomSampler
 from .dataset_fg import DatasetMeta
+
 def build_loader(config):
     config.defrost()
     dataset_train, config.MODEL.NUM_CLASSES = build_dataset(is_train=True, config=config)
@@ -78,7 +79,7 @@ def build_dataset(is_train, config):
             dataset = CachedImageFolder(config.DATA.DATA_PATH, ann_file, prefix, transform,
                                         cache_mode=config.DATA.CACHE_MODE if is_train else 'part')
         else:
-#             root = os.path.join(config.DATA.DATA_PATH, prefix)
+            # root = os.path.join(config.DATA.DATA_PATH, prefix)
             root = './datasets/imagenet'
             dataset = datasets.ImageFolder(root, transform=transform)
         nb_classes = 1000

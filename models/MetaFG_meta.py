@@ -44,7 +44,6 @@ def make_blocks(stage_index,depths,embed_dims,img_size,dpr,extra_token_num=1,num
         else:
             raise NotImplementedError("We only support conv and mhsa")
     return blocks
-    
 
 class MetaFG_Meta(nn.Module):
     def __init__(self,img_size=224,in_chans=3, num_classes=1000,
@@ -69,7 +68,7 @@ class MetaFG_Meta(nn.Module):
         self.attn_embed_dims = attn_embed_dims
         self.extra_token_num = extra_token_num
         if self.add_meta:
-#             assert len(meta_dims)==extra_token_num-1
+            # assert len(meta_dims)==extra_token_num-1
             for ind,meta_dim in enumerate(meta_dims):
                 meta_head_1 = nn.Sequential(
                                         nn.Linear(meta_dim, attn_embed_dims[0]),
@@ -131,6 +130,7 @@ class MetaFG_Meta(nn.Module):
         trunc_normal_(self.cls_token_1, std=.02)
         trunc_normal_(self.cls_token_2, std=.02)
         self.apply(self._init_weights)
+    
     def _init_weights(self, m):
         if isinstance(m, nn.Linear):
             trunc_normal_(m.weight, std=.02)
@@ -141,11 +141,7 @@ class MetaFG_Meta(nn.Module):
             nn.init.constant_(m.weight, 1.0)
         elif isinstance(m, nn.Conv2d):
             nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-#             fan_out = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
-#             fan_out //= m.groups
-#             m.weight.data.normal_(0, math.sqrt(2.0 / fan_out))
-#             if m.bias is not None:
-#                 m.bias.data.zero_()
+            # fan_out = m.data.zero_()
         elif isinstance(m, nn.BatchNorm2d):
             nn.init.ones_(m.weight)
             nn.init.zeros_(m.bias)
@@ -232,6 +228,7 @@ class MetaFG_Meta(nn.Module):
         x = self.head(x)
         return x 
 
+
 @register_model
 def MetaFG_meta_0(pretrained=False, **kwargs):
     model = MetaFG_Meta(conv_embed_dims = [64,96,192],attn_embed_dims=[384,768],
@@ -241,6 +238,7 @@ def MetaFG_meta_0(pretrained=False, **kwargs):
         load_pretrained(
             model, num_classes=model.num_classes, in_chans=kwargs.get('in_chans', 3))
     return model
+
 @register_model
 def MetaFG_meta_1(pretrained=False, **kwargs):
     model = MetaFG_Meta(conv_embed_dims = [64,96,192],attn_embed_dims=[384,768],
@@ -250,6 +248,7 @@ def MetaFG_meta_1(pretrained=False, **kwargs):
         load_pretrained(
             model, num_classes=model.num_classes, in_chans=kwargs.get('in_chans', 3))
     return model
+
 @register_model
 def MetaFG_meta_2(pretrained=False, **kwargs):
     model = MetaFG_Meta(conv_embed_dims = [128,128,256],attn_embed_dims=[512,1024],
@@ -259,6 +258,7 @@ def MetaFG_meta_2(pretrained=False, **kwargs):
         load_pretrained(
             model, num_classes=model.num_classes, in_chans=kwargs.get('in_chans', 3))
     return model
+
 if __name__ == "__main__":
     x = torch.randn([2, 3, 224, 224])
     meta = torch.randn([2,7])

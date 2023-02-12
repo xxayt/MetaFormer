@@ -116,13 +116,14 @@ def save_checkpoint(config, epoch, model, max_accuracy, optimizer, lr_scheduler,
                   'config': config}
     if config.AMP_OPT_LEVEL != "O0":
         save_state['amp'] = amp.state_dict()
-
+    '''
+    # 保存当前epoch参数
     save_path = os.path.join(config.OUTPUT, f'ckpt_epoch_{epoch}.pth')
     logger.info(f"{save_path} saving......")
     torch.save(save_state, save_path)
     logger.info(f"{save_path} saved !!!")
-    
-    
+    '''
+    # 保存最新epoch参数
     lastest_save_path = os.path.join(config.OUTPUT, f'latest.pth')
     logger.info(f"{lastest_save_path} saving......")
     torch.save(save_state, lastest_save_path)
@@ -142,7 +143,7 @@ def get_grad_norm(parameters, norm_type=2):
     total_norm = total_norm ** (1. / norm_type)
     return total_norm
 
-
+#  识别已有参数基础是否合法/最新
 def auto_resume_helper(output_dir):
     checkpoints = os.listdir(output_dir)
     checkpoints = [ckpt for ckpt in checkpoints if ckpt.endswith('pth')]

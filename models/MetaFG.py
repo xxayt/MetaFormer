@@ -114,11 +114,11 @@ class MetaFG(nn.Module):
             nn.init.constant_(m.weight, 1.0)
         elif isinstance(m, nn.Conv2d):
             nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-#             fan_out = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
-#             fan_out //= m.groups
-#             m.weight.data.normal_(0, math.sqrt(2.0 / fan_out))
-#             if m.bias is not None:
-#                 m.bias.data.zero_()
+            # fan_out = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+            # fan_out //= m.groups
+            # m.weight.data.normal_(0, math.sqrt(2.0 / fan_out))
+            # if m.bias is not None:
+            #     m.bias.data.zero_()
         elif isinstance(m, nn.BatchNorm2d):
             nn.init.ones_(m.weight)
             nn.init.zeros_(m.bias)
@@ -178,6 +178,7 @@ class MetaFG(nn.Module):
         x = self.forward_features(x,meta)
         x = self.head(x)
         return x 
+
 @register_model
 def MetaFG_0(pretrained=False, **kwargs):
     model = MetaFG(conv_embed_dims = [64,96,192],attn_embed_dims=[384,768],
@@ -187,6 +188,7 @@ def MetaFG_0(pretrained=False, **kwargs):
         load_pretrained(
             model, num_classes=model.num_classes, in_chans=kwargs.get('in_chans', 3))
     return model
+
 @register_model
 def MetaFG_1(pretrained=False, **kwargs):
     model = MetaFG(conv_embed_dims = [64,96,192],attn_embed_dims=[384,768],
@@ -196,6 +198,7 @@ def MetaFG_1(pretrained=False, **kwargs):
         load_pretrained(
             model, num_classes=model.num_classes, in_chans=kwargs.get('in_chans', 3))
     return model
+
 @register_model
 def MetaFG_2(pretrained=False, **kwargs):
     model = MetaFG(conv_embed_dims = [128,128,256],attn_embed_dims=[512,1024],
@@ -205,6 +208,7 @@ def MetaFG_2(pretrained=False, **kwargs):
         load_pretrained(
             model, num_classes=model.num_classes, in_chans=kwargs.get('in_chans', 3))
     return model
+
 if __name__ == "__main__":
     x = torch.randn([2, 3, 224, 224])
     model = MetaFG()

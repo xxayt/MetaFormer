@@ -126,6 +126,7 @@ venv.bak/
 dmypy.json
 
 # Pyre type checker
+*.txt
 .pyre/
 /output
 /imagenet

@@ -18,6 +18,7 @@ class SwishImplementation(torch.autograd.Function):
         sigmoid_i = torch.sigmoid(i)
         return grad_output * (sigmoid_i * (1 + i * (1 - sigmoid_i)))
 
+
 class MemoryEfficientSwish(nn.Module):
     def forward(self, x):
         return SwishImplementation.apply(x)
@@ -38,11 +39,13 @@ def drop_connect(inputs, p, training):
 def get_same_padding_conv2d(image_size=None):
      return partial(Conv2dStaticSamePadding, image_size=image_size)
 
+
 def get_width_and_height_from_size(x):
     """ Obtains width and height from a int or tuple """
     if isinstance(x, int): return x, x
     if isinstance(x, list) or isinstance(x, tuple): return x
     else: raise TypeError()
+
 
 def calculate_output_image_size(input_image_size, stride):
     """
@@ -54,7 +57,6 @@ def calculate_output_image_size(input_image_size, stride):
     image_height = int(math.ceil(image_height / stride))
     image_width = int(math.ceil(image_width / stride))
     return [image_height, image_width]
-
 
 
 class Conv2dStaticSamePadding(nn.Conv2d):
@@ -82,12 +84,14 @@ class Conv2dStaticSamePadding(nn.Conv2d):
         x = F.conv2d(x, self.weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
         return x
 
+
 class Identity(nn.Module):
     def __init__(self, ):
         super(Identity, self).__init__()
 
     def forward(self, input):
         return input
+
 
 # #MBConvBlock
 class MBConvBlock(nn.Module):
@@ -161,6 +165,7 @@ class MBConvBlock(nn.Module):
                 x = drop_connect(x, p=self._drop_connect_rate, training=self.training)
             x = x + inputs  # skip connection
         return x
+
 if __name__ == '__main__':
     input=torch.randn(1,3,112,112)
     mbconv=MBConvBlock(ksize=3,input_filters=3,output_filters=3,expand_ratio=4,stride=1)
