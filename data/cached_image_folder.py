@@ -220,12 +220,11 @@ class CachedImageFolder(DatasetFolder):
         target_transform (callable, optional): A function/transform that takes in the
             target and transforms it.
         loader (callable, optional): A function to load an image given its path.
-     Attributes:
+    Attributes:
         imgs (list): List of (image path, class_index) tuples
     """
 
-    def __init__(self, root, ann_file='', img_prefix='', transform=None, target_transform=None,
-                 loader=default_img_loader, cache_mode="no"):
+    def __init__(self, root, ann_file='', img_prefix='', transform=None, target_transform=None, loader=default_img_loader, cache_mode="no"):
         super(CachedImageFolder, self).__init__(root, loader, IMG_EXTENSIONS,
                                                 ann_file=ann_file, img_prefix=img_prefix,
                                                 transform=transform, target_transform=target_transform,

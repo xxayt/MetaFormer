@@ -37,7 +37,7 @@ def drop_connect(inputs, p, training):
 
 
 def get_same_padding_conv2d(image_size=None):
-     return partial(Conv2dStaticSamePadding, image_size=image_size)
+    return partial(Conv2dStaticSamePadding, image_size=image_size)
 
 
 def get_width_and_height_from_size(x):

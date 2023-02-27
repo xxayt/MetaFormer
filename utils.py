@@ -125,12 +125,12 @@ def save_checkpoint(config, epoch, model, max_accuracy, optimizer, lr_scheduler,
     '''
     # 保存最新epoch参数
     lastest_save_path = os.path.join(config.OUTPUT, f'latest.pth')
-    logger.info(f"{lastest_save_path} saving......")
+    # logger.info(f"{lastest_save_path} saving......")
     torch.save(save_state, lastest_save_path)
     logger.info(f"{lastest_save_path} saved !!!")
 
 
-
+#  识别已有参数基础是否合法/最新
 def get_grad_norm(parameters, norm_type=2):
     if isinstance(parameters, torch.Tensor):
         parameters = [parameters]

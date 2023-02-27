@@ -15,6 +15,7 @@ from PIL import Image
 from scipy import io as scio
 from math import radians, cos, sin, asin, sqrt, pi
 IMG_EXTENSIONS = ['.png', '.jpg', '.jpeg']
+
 def get_spatial_info(latitude,longitude):
     if latitude and longitude:
         latitude = radians(latitude)
@@ -25,6 +26,7 @@ def get_spatial_info(latitude,longitude):
         return [x,y,z]
     else:
         return [0,0,0]
+
 def get_temporal_info(date,miss_hour=False):
     try:
         if date:
@@ -54,6 +56,7 @@ def get_temporal_info(date,miss_hour=False):
             return [0,0,0,0]
     except:
         return [0,0,0,0]
+
 def load_file(root,dataset):
     if dataset == 'inaturelist2017':
         year_flag = 7
@@ -94,7 +97,6 @@ def load_file(root,dataset):
         for categorie in val_class_info['categories']:
             name = map_2018[int(categorie['name'])]
             id2label[int(categorie['id'])] = name.strip().lower()
-    
     return train_class_info,train_id2meta,val_class_info,val_id2meta,class_to_idx,id2label
 
 
@@ -119,7 +121,7 @@ def find_images_and_targets_cub200(root,dataset,istrain=False,aux_info=False):
             image_id,file_name = line.split()
             file_path = os.path.join(images_root,file_name)
             target = imageid2label[int(image_id)]
-            if aux_info:
+            if aux_info:  # 有元数据
                 with open(os.path.join(bert_embedding_root,file_name.replace('.jpg','.pickle')),'rb') as f_bert:
                     bert_embedding = pickle.load(f_bert)
                     bert_embedding = bert_embedding['embedding_words']
@@ -418,7 +420,8 @@ class DatasetMeta(data.Dataset):
         elif dataset in ['inaturelist2017','inaturelist2018']:
             images, class_to_idx,images_info = find_images_and_targets_2017_2018(root,dataset,train,aux_info)
         elif dataset == 'cub-200':
-            images, class_to_idx,images_info = find_images_and_targets_cub200(root,dataset,train,aux_info)
+            images, class_to_idx,images_info = find_images_and_targets_cub200_attribute(root,dataset,train,aux_info)
+            # images, class_to_idx,images_info = find_images_and_targets_cub200(root,dataset,train,aux_info)
         elif dataset == 'stanfordcars':
             images, class_to_idx,images_info = find_images_and_targets_stanfordcars(root,dataset,train)
         elif dataset == 'oxfordflower':
@@ -430,8 +433,7 @@ class DatasetMeta(data.Dataset):
         elif dataset == 'aircraft':
             images,class_to_idx,images_info = find_images_and_targets_aircraft(root,dataset,train)
         if len(images) == 0:
-            raise RuntimeError(f'Found 0 images in subfolders of {root}. '
-                               f'Supported image extensions are {", ".join(IMG_EXTENSIONS)}')
+            raise RuntimeError(f'Found 0 images in subfolders of {root}. ' f'Supported image extensions are {", ".join(IMG_EXTENSIONS)}')
         self.root = root
         self.samples = images
         self.imgs = self.samples  # torchvision ImageFolder compat
@@ -439,7 +441,6 @@ class DatasetMeta(data.Dataset):
         self.images_info = images_info
         self.load_bytes = load_bytes
         self.transform = transform
-        
 
     def __getitem__(self, index):
         if self.aux_info:
@@ -462,16 +463,15 @@ class DatasetMeta(data.Dataset):
         return len(self.samples)
 
 if __name__ == '__main__':
-#     train_dataset = DatasetPre('./fgvc_previous','./fgvc_previous',train=True,aux_info=True)
-#     import ipdb;ipdb.set_trace()
-#     train_dataset = DatasetMeta('./nabirds',train=True,aux_info=False,dataset='nabirds')
-#     find_images_and_targets_stanforddogs('./stanforddogs',None,istrain=True)
-#     find_images_and_targets_oxfordflower('./oxfordflower',None,istrain=True)
+    # train_dataset = DatasetPre('./fgvc_previous','./fgvc_previous',train=True,aux_info=True)
+    # import ipdb;ipdb.set_trace()
+    # train_dataset = DatasetMeta('./nabirds',train=True,aux_info=False,dataset='nabirds')
+    # find_images_and_targets_stanforddogs('./stanforddogs',None,istrain=True)
+    # find_images_and_targets_oxfordflower('./oxfordflower',None,istrain=True)
     find_images_and_targets_ablation('./inaturelist2021',True,True,0.5,1.0)
-#     find_images_and_targets_cub200('./cub-200','cub-200',True,True)
-#     find_images_and_targets_aircraft('./aircraft','aircraft',True)
-#     train_dataset = DatasetMeta('./aircraft',train=False,aux_info=False,dataset='aircraft')
-    import ipdb;ipdb.set_trace()
-#     find_images_and_targets_2017('')
-    
-
+    # find_images_and_targets_cub200('./cub-200','cub-200',True,True)
+    # find_images_and_targets_cub200_attribute('./datasets/cub-200','cub-200',True,True)
+    # find_images_and_targets_aircraft('./aircraft','aircraft',True)
+    # train_dataset = DatasetMeta('./aircraft',train=False,aux_info=False,dataset='aircraft')
+    # import ipdb;ipdb.set_trace()
+    # find_images_and_targets_2017('')

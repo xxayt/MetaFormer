@@ -41,7 +41,8 @@ def build_loader(config):
     sampler_val = SubsetRandomSampler(indices)
 
     data_loader_train = torch.utils.data.DataLoader(
-        dataset_train, sampler=sampler_train,
+        dataset_train, 
+        sampler=sampler_train,
         batch_size=config.DATA.BATCH_SIZE,
         num_workers=config.DATA.NUM_WORKERS,
         pin_memory=config.DATA.PIN_MEMORY,
@@ -49,7 +50,8 @@ def build_loader(config):
     )
 
     data_loader_val = torch.utils.data.DataLoader(
-        dataset_val, sampler=sampler_val,
+        dataset_val, 
+        sampler=sampler_val,
         batch_size=config.DATA.BATCH_SIZE,
         shuffle=False,
         num_workers=config.DATA.NUM_WORKERS,
@@ -65,7 +67,6 @@ def build_loader(config):
             mixup_alpha=config.AUG.MIXUP, cutmix_alpha=config.AUG.CUTMIX, cutmix_minmax=config.AUG.CUTMIX_MINMAX,
             prob=config.AUG.MIXUP_PROB, switch_prob=config.AUG.MIXUP_SWITCH_PROB, mode=config.AUG.MIXUP_MODE,
             label_smoothing=config.MODEL.LABEL_SMOOTHING, num_classes=config.MODEL.NUM_CLASSES)
-
     return dataset_train, dataset_val, data_loader_train, data_loader_val, mixup_fn
 
 
@@ -76,8 +77,7 @@ def build_dataset(is_train, config):
         if config.DATA.ZIP_MODE:
             ann_file = prefix + "_map.txt"
             prefix = prefix + ".zip@/"
-            dataset = CachedImageFolder(config.DATA.DATA_PATH, ann_file, prefix, transform,
-                                        cache_mode=config.DATA.CACHE_MODE if is_train else 'part')
+            dataset = CachedImageFolder(config.DATA.DATA_PATH, ann_file, prefix, transform, cache_mode=config.DATA.CACHE_MODE if is_train else 'part')
         else:
             # root = os.path.join(config.DATA.DATA_PATH, prefix)
             root = './datasets/imagenet'
@@ -85,8 +85,7 @@ def build_dataset(is_train, config):
         nb_classes = 1000
     elif config.DATA.DATASET == 'inaturelist2021':
         root = './datasets/inaturelist2021'
-        dataset = DatasetMeta(root=root,transform=transform,train=is_train,aux_info=config.DATA.ADD_META,dataset=config.DATA.DATASET,
-                             class_ratio=config.DATA.CLASS_RATIO,per_sample=config.DATA.PER_SAMPLE)
+        dataset = DatasetMeta(root=root,transform=transform,train=is_train,aux_info=config.DATA.ADD_META,dataset=config.DATA.DATASET, class_ratio=config.DATA.CLASS_RATIO,per_sample=config.DATA.PER_SAMPLE)
         nb_classes = 10000
     elif config.DATA.DATASET == 'inaturelist2021_mini':
         root = './datasets/inaturelist2021_mini'
@@ -151,7 +150,9 @@ def build_transform(is_train, config):
         return transform
 
     t = []
+    # 若 img_size > 32
     if resize_im:
+        # 若 中心裁剪 = True
         if config.TEST.CROP:
             size = int((256 / 224) * config.DATA.IMG_SIZE)
             t.append(
@@ -161,10 +162,8 @@ def build_transform(is_train, config):
             t.append(transforms.CenterCrop(config.DATA.IMG_SIZE))
         else:
             t.append(
-                transforms.Resize((config.DATA.IMG_SIZE, config.DATA.IMG_SIZE),
-                                  interpolation=_pil_interp(config.DATA.INTERPOLATION))
+                transforms.Resize((config.DATA.IMG_SIZE, config.DATA.IMG_SIZE), interpolation=_pil_interp(config.DATA.INTERPOLATION))
             )
-
     t.append(transforms.ToTensor())
     t.append(transforms.Normalize(IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD))
     return transforms.Compose(t)
