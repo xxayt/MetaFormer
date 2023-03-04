@@ -43,15 +43,29 @@ def make_blocks(stage_index,depths,embed_dims,img_size,dpr,extra_token_num=1,num
         else:
             raise NotImplementedError("We only support conv and mhsa")
     return blocks
-    
+
 
 class MetaFG(nn.Module):
-    def __init__(self,img_size=224,in_chans=3, num_classes=1000,
-                conv_embed_dims = [64,96,192],attn_embed_dims=[384,768],
-                conv_depths = [2,2,3],attn_depths = [5,2],num_heads=32,extra_token_num=1,mlp_ratio=4.,
-                conv_norm_layer=nn.BatchNorm2d,attn_norm_layer=nn.LayerNorm,
-                conv_act_layer=nn.ReLU,attn_act_layer=nn.GELU,
-                qkv_bias=False, qk_scale=None, drop_rate=0., attn_drop_rate=0.,drop_path_rate=0.,
+    def __init__(self,
+                img_size=224,
+                in_chans=3, 
+                num_classes=1000,
+                conv_embed_dims = [64,96,192],
+                attn_embed_dims=[384,768],
+                conv_depths = [2,2,3],
+                attn_depths = [5,2],
+                num_heads=32,
+                extra_token_num=1,
+                mlp_ratio=4.,
+                conv_norm_layer=nn.BatchNorm2d,
+                attn_norm_layer=nn.LayerNorm,
+                conv_act_layer=nn.ReLU,
+                attn_act_layer=nn.GELU,
+                qkv_bias=False, 
+                qk_scale=None, 
+                drop_rate=0., 
+                attn_drop_rate=0.,
+                drop_path_rate=0.,
                 meta_dims=[],
                 only_last_cls=False,
                 use_checkpoint=False):
@@ -63,47 +77,47 @@ class MetaFG(nn.Module):
         dpr = [x.item() for x in torch.linspace(0, drop_path_rate, sum(conv_depths[1:]+attn_depths))]
         #stage_0
         self.stage_0 = nn.Sequential(*[
-                nn.Conv2d(in_chans, stem_chs[0], 3, stride=2, padding=1, bias=False),
-                conv_norm_layer(stem_chs[0]),
-                conv_act_layer(inplace=True),
-                nn.Conv2d(stem_chs[0], stem_chs[1], 3, stride=1, padding=1, bias=False),
-                conv_norm_layer(stem_chs[1]),
-                conv_act_layer(inplace=True),
-                nn.Conv2d(stem_chs[1], conv_embed_dims[0], 3, stride=1, padding=1, bias=False)])
+                                    nn.Conv2d(in_chans, stem_chs[0], 3, stride=2, padding=1, bias=False),
+                                    conv_norm_layer(stem_chs[0]),
+                                    conv_act_layer(inplace=True),
+                                    nn.Conv2d(stem_chs[0], stem_chs[1], 3, stride=1, padding=1, bias=False),
+                                    conv_norm_layer(stem_chs[1]),
+                                    conv_act_layer(inplace=True),
+                                    nn.Conv2d(stem_chs[1], conv_embed_dims[0], 3, stride=1, padding=1, bias=False)])
         self.bn1 = conv_norm_layer(conv_embed_dims[0])
         self.act1 = conv_act_layer(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         #stage_1
         self.stage_1 = nn.ModuleList(make_blocks(1,conv_depths+attn_depths,conv_embed_dims+attn_embed_dims,img_size//4,
-                                      dpr=dpr,num_heads=num_heads,extra_token_num=extra_token_num,mlp_ratio=mlp_ratio,stage_type='conv'))
+                                    dpr=dpr,num_heads=num_heads,extra_token_num=extra_token_num,mlp_ratio=mlp_ratio,stage_type='conv'))
         #stage_2
         self.stage_2 = nn.ModuleList(make_blocks(2,conv_depths+attn_depths,conv_embed_dims+attn_embed_dims,img_size//4,
-                                      dpr=dpr,num_heads=num_heads,extra_token_num=extra_token_num,mlp_ratio=mlp_ratio,stage_type='conv'))
-        
+                                    dpr=dpr,num_heads=num_heads,extra_token_num=extra_token_num,mlp_ratio=mlp_ratio,stage_type='conv'))
         #stage_3
         self.cls_token_1 = nn.Parameter(torch.zeros(1, 1, attn_embed_dims[0]))
         self.stage_3 = nn.ModuleList(make_blocks(3,conv_depths+attn_depths,conv_embed_dims+attn_embed_dims,img_size//8,
-                                      dpr=dpr,num_heads=num_heads,extra_token_num=extra_token_num,mlp_ratio=mlp_ratio,stage_type='mhsa'))
-        
+                                    dpr=dpr,num_heads=num_heads,extra_token_num=extra_token_num,mlp_ratio=mlp_ratio,stage_type='mhsa'))
         #stage_4
         self.cls_token_2 = nn.Parameter(torch.zeros(1, 1, attn_embed_dims[1]))
         self.stage_4 = nn.ModuleList(make_blocks(4,conv_depths+attn_depths,conv_embed_dims+attn_embed_dims,img_size//16,
-                                      dpr=dpr,num_heads=num_heads,extra_token_num=extra_token_num,mlp_ratio=mlp_ratio,stage_type='mhsa'))
+                                    dpr=dpr,num_heads=num_heads,extra_token_num=extra_token_num,mlp_ratio=mlp_ratio,stage_type='mhsa'))
         self.norm_2 = attn_norm_layer(attn_embed_dims[1])
+        
         #Aggregate
         if not self.only_last_cls:
             self.cl_1_fc = nn.Sequential(*[Mlp(in_features=attn_embed_dims[0], out_features=attn_embed_dims[1]),
-                                         attn_norm_layer(attn_embed_dims[1])])
+                                        attn_norm_layer(attn_embed_dims[1])])
             self.aggregate = torch.nn.Conv1d(in_channels=2, out_channels=1, kernel_size=1)
             self.norm_1 = attn_norm_layer(attn_embed_dims[0])
             self.norm = attn_norm_layer(attn_embed_dims[1])
-            
+        
         # Classifier head
         self.head = nn.Linear(attn_embed_dims[-1], num_classes) if num_classes > 0 else nn.Identity()
-        
+
         trunc_normal_(self.cls_token_1, std=.02)
         trunc_normal_(self.cls_token_2, std=.02)
         self.apply(self._init_weights)
+
     def _init_weights(self, m):
         if isinstance(m, nn.Linear):
             trunc_normal_(m.weight, std=.02)
@@ -122,7 +136,7 @@ class MetaFG(nn.Module):
         elif isinstance(m, nn.BatchNorm2d):
             nn.init.ones_(m.weight)
             nn.init.zeros_(m.bias)
-    
+
     @torch.jit.ignore
     def no_weight_decay(self):
         return {'cls_token_1','cls_token_2'}
@@ -173,7 +187,7 @@ class MetaFG(nn.Module):
         else:
             cls = cls_2.squeeze(dim=1)
         return cls
-            
+
     def forward(self, x,meta=None):
         x = self.forward_features(x,meta)
         x = self.head(x)

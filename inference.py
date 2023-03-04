@@ -4,7 +4,7 @@ from PIL import Image
 from config import get_inference_config
 from models import build_model
 from torch.autograd import Variable
-from torchvision.transforms import transforms
+from torchvision.transforms import transforms, InterpolationMode
 import numpy as np
 import argparse
 
@@ -84,7 +84,8 @@ class Inference:
         self.model.cuda()
 
         self.transform_img = transforms.Compose([
-            transforms.Resize((224, 224), interpolation=Image.BILINEAR),
+            # transforms.Resize((224, 224), interpolation=Image.BILINEAR),
+            transforms.Resize((224, 224), interpolation=InterpolationMode.BILINEAR),
             transforms.ToTensor(), # transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
             transforms.Normalize(IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD)
         ])
