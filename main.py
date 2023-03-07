@@ -164,13 +164,13 @@ def main(config):
         
         logger.info(f"**********normal test***********")
         acc1, acc5, loss = validate(config, data_loader_val, model)
-        logger.info(f"Accuracy of the network on the {len(dataset_val)} test images: {acc1:.1f}%")
+        logger.info(f"Accuracy of the network on the {len(dataset_val)} test images: {acc1:.3f}%")
         max_accuracy = max(max_accuracy, acc1)
         logger.info(f'Max accuracy: {max_accuracy:.2f}%')
         if config.DATA.ADD_META:
             logger.info(f"**********mask meta test***********")
             acc1, acc5, loss = validate(config, data_loader_val, model,mask_meta=True)
-            logger.info(f"Accuracy of the network on the {len(dataset_val)} test images: {acc1:.1f}%")
+            logger.info(f"Accuracy of the network on the {len(dataset_val)} test images: {acc1:.3f}%")
             # data_loader_train.terminate()
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))

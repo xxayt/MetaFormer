@@ -180,9 +180,9 @@ _C.LOCAL_RANK = 0
 
 
 
-
+# 使用文件更新
 def _update_config_from_file(config, cfg_file):
-    config.defrost()
+    config.defrost()  # 解冻参数，可以修改
     with open(cfg_file, 'r') as f:
         yaml_cfg = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -193,15 +193,15 @@ def _update_config_from_file(config, cfg_file):
             )
     print('=> merge config from {}'.format(cfg_file))
     config.merge_from_file(cfg_file)
-    config.freeze()
+    config.freeze()  # 冻结参数，不能更新
 
 
+# 使用args参数更新
 def update_config(config, args):
     _update_config_from_file(config, args.cfg)
-
     config.defrost()
     if args.opts:
-        config.merge_from_list(args.opts)
+        config.merge_from_list(args.opts)  # 可以直接从一个list中读取参数
 
     # merge from specific arguments
     if args.batch_size:
@@ -228,11 +228,8 @@ def update_config(config, args):
         config.EVAL_MODE = True
     if args.throughput:
         config.THROUGHPUT_MODE = True
-
-        
     if args.num_workers is not None:
         config.DATA.NUM_WORKERS = args.num_workers
-        
     #set lr and weight decay
     if args.lr is not None:
         config.TRAIN.BASE_LR = args.lr
@@ -244,7 +241,6 @@ def update_config(config, args):
         config.TRAIN.WARMUP_EPOCHS = args.warmup_epochs
     if args.weight_decay is not None:
         config.TRAIN.WEIGHT_DECAY = args.weight_decay
-
     if args.epochs is not None:
         config.TRAIN.EPOCHS = args.epochs
     if args.dataset is not None:
@@ -253,32 +249,27 @@ def update_config(config, args):
         config.TRAIN.LR_SCHEDULER.NAME = args.lr_scheduler_name
     if args.pretrain is not None:
         config.MODEL.PRETRAINED = args.pretrain
-
     # set local rank for distributed training
     config.LOCAL_RANK = args.local_rank
-
     # output folder
     config.OUTPUT = os.path.join(config.OUTPUT, config.MODEL.NAME, config.TAG)
-
-    config.freeze()
+    config.freeze()  # 冻结参数，不能更新
 
 
 def get_config(args):
     """Get a yacs CfgNode object with default values."""
     # Return a clone so that the defaults will not be altered
     # This is for the "local variable" use pattern
-    config = _C.clone()
-    update_config(config, args)
-
+    config = _C.clone()  # 读取预定义的一些值
+    update_config(config, args)  # 可以使用yaml文件中的值更新，以及直接使用args中的参数更新
     return config
 
 
 ################### For Inferencing ####################
 def update_inference_config(config, args):
     _update_config_from_file(config, args.cfg)
-
     config.defrost()
-
+    
     config.freeze()
 
 
@@ -288,7 +279,6 @@ def get_inference_config(cfg_path):
     # This is for the "local variable" use pattern
     config = _C.clone()
     update_inference_config(config, cfg_path)
-
     return config
 
 ################### For Inferencing ####################

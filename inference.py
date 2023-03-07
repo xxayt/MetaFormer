@@ -119,8 +119,7 @@ def parse_option():
 
 if __name__ == '__main__':
     args = parse_option()
-    result = Inference(config_path=args.cfg,
-                       model_path=args.model_path).infer(img_path=args.img_path, meta_data_path=args.meta_path)
+    result = Inference(config_path=args.cfg, model_path=args.model_path).infer(img_path=args.img_path, meta_data_path=args.meta_path)
     print("Predicted: ", result)
 
 # Usage: python inference.py --cfg 'path/to/cfg' --model_path 'path/to/model' --img-path 'path/to/img' --meta-path 'path/to/meta'
