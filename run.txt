@@ -2,17 +2,11 @@
 git clone https://github.com/xxayt/MetaFormer.git
 tar zxvf  文件名.tgz -C ./
 # https://data.caltech.edu/records/65de6-vp158
-pip install torch==1.5.1 torchvision==0.6.1
-pip install timm==0.4.5
-# pip install -i https://pypi.tuna.tsinghua.edu.cn/simple ...
-pip install opencv-python==4.5.1.48
-pip install yacs==0.1.8
-pip install pyyaml
-pip install pandas
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch==1.5.1 torchvision==0.6.1
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple timm==0.4.5 opencv-python==4.5.1.48 yacs==0.1.8 pyyaml pandas
 # /disk3/xzj/apps/anaconda3/pkgs/libstdcxx-ng-11.2.0-h1234567_1/lib/libstdc++.so.6.0.29
 # https://blog.csdn.net/qq_30653631/article/details/107620137
-pip install scipy
-pip install termcolor
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple scipy termcolor packaging
 
 git clone https://github.com/NVIDIA/apex
 cd apex
@@ -29,7 +23,7 @@ python3 -m torch.distributed.launch --nproc_per_node 1 --master_port 12345  main
 python3 -m torch.distributed.launch --nproc_per_node 1 --master_port 12345  main.py --cfg ./configs/MetaFG_2_224.yaml --batch-size 32 --tag cub-200_v1 --lr 5e-5 --min-lr 5e-7 --warmup-lr 5e-8 --epochs 300 --warmup-epochs 20 --dataset cub-200 --pretrain ./pretrained_model/metafg_2_21k_224.pth --accumulation-steps 2 --opts DATA.IMG_SIZE 224
 
 # yesmeta 1 224 !
-python3 -m torch.distributed.launch --nproc_per_node 1 --master_port 12345  main.py --cfg ./configs/MetaFG_meta_attribute_1_224.yaml --batch-size 8 --tag cub-200_v1 --lr 5e-5 --min-lr 2e-7 --warmup-lr 5e-8 --epochs 300 --warmup-epochs 20 --dataset cub-200 --pretrain ./pretrained_model/metafg_1_inat21_384.pth --accumulation-steps 2 --opts DATA.IMG_SIZE 224
+python -m torch.distributed.launch --nproc_per_node 1 --master_port 12345  main.py --cfg ./configs/MetaFG_meta_attribute_1_224.yaml --batch-size 8 --tag cub-200_v1 --lr 5e-5 --min-lr 2e-7 --warmup-lr 5e-8 --epochs 300 --warmup-epochs 20 --dataset cub-200 --pretrain ./pretrained_model/metafg_1_inat21_384.pth --accumulation-steps 2 --opts DATA.IMG_SIZE 224
 
 
 python3 -m torch.distributed.launch --nproc_per_node 1 --master_port 12345  main.py --cfg ./configs/MetaFG_2_224.yaml --batch-size 32 --tag cub-200_v1 --lr 5e-5 --min-lr 5e-7 --warmup-lr 5e-8 --epochs 300 --warmup-epochs 20 --dataset cub-200 --pretrain ./pretrained_model/metafg_2_21k_224.pth --accumulation-steps 2 --opts DATA.IMG_SIZE 384

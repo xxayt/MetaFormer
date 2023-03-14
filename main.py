@@ -1,4 +1,4 @@
-import os
+import osget_config
 import time
 import argparse
 import datetime
@@ -18,7 +18,6 @@ from lr_scheduler import build_scheduler
 from optimizer import build_optimizer
 from logger import create_logger
 from utils import load_checkpoint, save_checkpoint, get_grad_norm, auto_resume_helper, reduce_tensor,load_pretained
-from torch.utils.tensorboard import SummaryWriter
 try:
     # noinspection PyUnresolvedReferences
     from apex import amp
@@ -110,6 +109,7 @@ def main(config):
         logger.info(f"number of GFLOPs: {flops / 1e9}")
     # 调整学习率 from lr_scheduler.py
     lr_scheduler = build_scheduler(config, optimizer, len(data_loader_train))
+    # 构造损失函数
     if config.AUG.MIXUP > 0.:
         # smoothing is handled with mixup label transform
         criterion = SoftTargetCrossEntropy()
@@ -157,7 +157,7 @@ def main(config):
     logger.info("Start training")
     start_time = time.time()
     for epoch in range(config.TRAIN.START_EPOCH, config.TRAIN.EPOCHS):
-        data_loader_train.sampler.set_epoch(epoch)      
+        data_loader_train.sampler.set_epoch(epoch)
         train_one_epoch_local_data(config, model, criterion, data_loader_train, optimizer, epoch, mixup_fn, lr_scheduler)
         if dist.get_rank() == 0 and (epoch % config.SAVE_FREQ == 0 or epoch == (config.TRAIN.EPOCHS - 1)):
             save_checkpoint(config, epoch, model_without_ddp, max_accuracy, optimizer, lr_scheduler, logger)
