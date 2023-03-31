@@ -21,7 +21,9 @@ class Mlp(nn.Module):
         x = self.drop(x)
         x = self.fc2(x)
         x = self.drop(x)
-        return x      
+        return x
+    
+# 没用到
 class DWConv(nn.Module):
     def __init__(self, dim=768):
         super(DWConv, self).__init__()
@@ -34,6 +36,7 @@ class DWConv(nn.Module):
         x = x.flatten(2).transpose(1, 2)
 
         return x
+
 class Relative_Attention(nn.Module):
     def __init__(self,dim,img_size,extra_token_num=1,num_heads=8,qkv_bias=False, qk_scale=None, attn_drop=0., proj_drop=0.):
         super().__init__()
@@ -92,6 +95,7 @@ class Relative_Attention(nn.Module):
         x = self.proj(x)
         x = self.proj_drop(x)
         return x
+
 class OverlapPatchEmbed(nn.Module):
     """ Image to Patch Embedding
     """
@@ -128,6 +132,8 @@ class OverlapPatchEmbed(nn.Module):
         x = self.norm(x)
 
         return x, H, W        
+
+
 class MHSABlock(nn.Module):
     def __init__(self, input_dim, output_dim,image_size, stride, num_heads,extra_token_num=1,mlp_ratio=4., qkv_bias=False, qk_scale=None, drop=0., attn_drop=0.,
                  drop_path=0., act_layer=nn.GELU, norm_layer=nn.LayerNorm):

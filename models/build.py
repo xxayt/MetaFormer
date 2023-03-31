@@ -3,7 +3,7 @@ from .MetaFG import *
 from .MetaFG_meta import *
 
 def build_model(config):
-    model_type = config.MODEL.TYPE
+    model_type = config.MODEL.TYPE  # "MetaFG"
     if model_type == 'MetaFG':
         model = create_model(
             config.MODEL.NAME,

@@ -193,14 +193,21 @@ class MetaFG(nn.Module):
         x = self.head(x)
         return x 
 
+
 @register_model
 def MetaFG_0(pretrained=False, **kwargs):
-    model = MetaFG(conv_embed_dims = [64,96,192],attn_embed_dims=[384,768],
-                 conv_depths = [2,2,3],attn_depths = [5,2],num_heads=8,mlp_ratio=4., **kwargs)
+    model = MetaFG(conv_embed_dims = [64,96,192],
+                    attn_embed_dims=[384,768],
+                    conv_depths = [2,2,3],
+                    attn_depths = [5,2],
+                    num_heads=8,
+                    mlp_ratio=4., 
+                    **kwargs)
     model.default_cfg = default_cfgs['MetaFG_0']
     if pretrained:
-        load_pretrained(
-            model, num_classes=model.num_classes, in_chans=kwargs.get('in_chans', 3))
+        load_pretrained(model, 
+                        num_classes=model.num_classes, 
+                        in_chans=kwargs.get('in_chans', 3))
     return model
 
 @register_model

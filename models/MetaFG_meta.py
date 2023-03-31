@@ -262,7 +262,7 @@ def MetaFG_meta_2(pretrained=False, **kwargs):
 if __name__ == "__main__":
     x = torch.randn([2, 3, 224, 224])
     meta = torch.randn([2,7])
-    model = MetaFG_meta()
+    model = MetaFG_meta_0()
     import ipdb;ipdb.set_trace()
     output = model(x,meta)
     print(output.shape)
