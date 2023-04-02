@@ -1,19 +1,6 @@
-配置文件
-git clone https://github.com/xxayt/MetaFormer.git
 tar zxvf  文件名.tgz -C ./
-# https://data.caltech.edu/records/65de6-vp158
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch==1.5.1 torchvision==0.6.1
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple timm==0.4.5 opencv-python==4.5.1.48 yacs==0.1.8 pyyaml pandas
 # /disk3/xzj/apps/anaconda3/pkgs/libstdcxx-ng-11.2.0-h1234567_1/lib/libstdc++.so.6.0.29
 # https://blog.csdn.net/qq_30653631/article/details/107620137
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple scipy termcolor packaging
-
-git clone https://github.com/NVIDIA/apex
-cd apex
-pip install -v --no-cache-dir ./
-# vim ~/.bashrc 
-# "export CUDA_HOME=$CUDA_HOME:/usr/local/cuda" change to "export CUDA_HOME=/usr/local/cuda"
-# source ~/.bashrc
 
 
 # nometa 0 224 !

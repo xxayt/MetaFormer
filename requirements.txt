@@ -1,0 +1,8 @@
+timm==0.4.5
+opencv-python==4.5.1.48
+yacs==0.1.8
+pyyaml
+pandas
+scipy
+termcolor
+packaging
